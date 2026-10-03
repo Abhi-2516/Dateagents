@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Play, CheckCircle2, Bot, Swords, Trophy, ExternalLink, RefreshCw, Video } from "lucide-react";

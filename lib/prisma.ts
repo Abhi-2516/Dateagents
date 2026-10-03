@@ -11,10 +11,11 @@ export function getPrisma(): PrismaClient {
 
   const dbUrl = process.env.DATABASE_URL;
 
-  if (!dbUrl && process.env.NODE_ENV === "production") {
-    console.warn(
-      "[Prisma Warning]: DATABASE_URL environment variable is not defined in production."
-    );
+  if (dbUrl) {
+    const sanitizedUrl = dbUrl.replace(/:[^:@]+@/, ":***@");
+    console.log(`[Prisma Init] Initializing PrismaClient with DATABASE_URL: ${sanitizedUrl}`);
+  } else {
+    console.error("[Prisma Init Error]: DATABASE_URL environment variable is MISSING in runtime environment!");
   }
 
   const client = new PrismaClient({
@@ -28,10 +29,7 @@ export function getPrisma(): PrismaClient {
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
-
+  globalForPrisma.prisma = client;
   return client;
 }
 
@@ -47,4 +45,5 @@ export const prisma = new Proxy({} as PrismaClient, {
     return value;
   },
 });
+
 

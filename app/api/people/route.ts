@@ -14,6 +14,8 @@ export async function GET() {
       orderBy: { createdAt: "asc" }
     });
 
+    console.log(`[GET /api/people] DATABASE_URL present: ${!!process.env.DATABASE_URL}, Fetched ${people.length} person records from DB.`);
+
     const formatted = people.map(p => ({
       ...p,
       analysis: p.analysis ? {
@@ -37,6 +39,8 @@ export async function GET() {
 
     return NextResponse.json({ success: true, count: formatted.length, data: formatted });
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[GET /api/people Error]:", err);
+    return NextResponse.json({ success: false, error: err.message || String(err) }, { status: 500 });
   }
 }
+
