@@ -1,0 +1,104 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Person {
+  id           String          @id @default(uuid())
+  name         String
+  linkedinUrl  String
+  instagramUrl String
+  profileImage String
+  headline     String
+  bio          String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  sources             PersonSource[]
+  analysis            PersonAnalysis?
+  agent               Agent?
+  datingSessionsAsA   DatingSession[] @relation("PersonA")
+  datingSessionsAsB   DatingSession[] @relation("PersonB")
+  rankings            Ranking[]       @relation("RankingPerson")
+  matchedInRankings   Ranking[]       @relation("RankingMatchedPerson")
+}
+
+model PersonSource {
+  id             String   @id @default(uuid())
+  personId       String
+  sourceType     String   // "LINKEDIN" | "INSTAGRAM"
+  url            String
+  rawData        String   // JSON string
+  normalizedText String
+  fetchedAt      DateTime @default(now())
+  status         String   // "SUCCESS" | "FAILED"
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+}
+
+model PersonAnalysis {
+  id                   String   @id @default(uuid())
+  personId             String   @unique
+  summary              String
+  interests            String   // JSON array
+  hobbies              String   // JSON array
+  professionalInterests String  // JSON array
+  lifestyleSignals     String   // JSON array
+  conversationTopics   String   // JSON array
+  explicitPreferences  String   // JSON array
+  values               String   // JSON array
+  needs                String   // JSON array
+  evidence             String   // JSON array
+  createdAt            DateTime @default(now())
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+}
+
+model Agent {
+  id                String   @id @default(uuid())
+  personId          String   @unique
+  persona           String
+  goals             String   // JSON array
+  interests         String   // JSON array
+  conversationStyle String
+  createdAt         DateTime @default(now())
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+}
+
+model DatingSession {
+  id                     String   @id @default(uuid())
+  personAId              String
+  personBId              String
+  agentAId               String
+  agentBId               String
+  transcript             String   // JSON array of turns
+  sharedInterests        String   // JSON array
+  interestingMoments     String   // JSON array
+  frictionPoints         String   // JSON array
+  agentAImpression       String
+  agentBImpression       String
+  compatibilityScore     Int
+  compatibilityBreakdown String   // JSON object
+  createdAt              DateTime @default(now())
+
+  personA Person @relation("PersonA", fields: [personAId], references: [id], onDelete: Cascade)
+  personB Person @relation("PersonB", fields: [personBId], references: [id], onDelete: Cascade)
+}
+
+model Ranking {
+  id              String   @id @default(uuid())
+  personId        String
+  matchedPersonId String
+  rank            Int
+  score           Int
+  reasoning       String
+  createdAt       DateTime @default(now())
+
+  person        Person @relation("RankingPerson", fields: [personId], references: [id], onDelete: Cascade)
+  matchedPerson Person @relation("RankingMatchedPerson", fields: [matchedPersonId], references: [id], onDelete: Cascade)
+}
