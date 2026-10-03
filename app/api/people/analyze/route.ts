@@ -6,6 +6,8 @@ import { getAIProvider } from "@/lib/ai/provider";
 import { prisma } from "@/lib/prisma";
 import { generatePersonRankings } from "@/lib/rankings/ranking-engine";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();

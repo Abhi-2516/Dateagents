@@ -4,6 +4,8 @@ import { getAIProvider } from "@/lib/ai/provider";
 import { INITIAL_25_PEOPLE } from "@/lib/data/mock-people";
 import { generatePersonRankings } from "@/lib/rankings/ranking-engine";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const { personAId, personBId } = await request.json();
