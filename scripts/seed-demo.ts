@@ -104,6 +104,7 @@ async function seedDemo() {
           interests: JSON.stringify(person.agent.interests),
           conversationStyle: person.agent.conversationStyle,
         }
+        //dev fixed
       });
 
       console.log(`  ✓ ${person.name} profile, sources, analysis, and agent seeded.`);
